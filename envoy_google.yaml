@@ -1,0 +1,73 @@
+admin:
+  access_log_path: /dev/null
+  address:
+    socket_address:
+      address: 127.0.0.1
+      port_value: 9000
+
+node:
+  cluster: service_greeter
+  id: test-id
+
+static_resources:
+  listeners:
+  - name: listener_0
+    address:
+      socket_address: { address: 0.0.0.0, port_value: 10000 }
+    filter_chains:
+    - filters:
+      - name: envoy.http_connection_manager
+        config:
+          stat_prefix: ingress_http
+          codec_type: AUTO
+          route_config:
+            name: local_route
+            virtual_hosts:
+            - name: local_service
+              domains: ["*"]
+              routes:
+              - match: { prefix: "/todos" }
+                route: { cluster: service_local }
+          http_filters:
+          - name: envoy.filters.http.jwt_authn
+            config:
+              providers:
+                google-jwt:
+                  issuer: accounts.google.com
+                  audiences:
+                  - 764086051850-6qr4p6gpi6hn506pt8ejuq83di341hur.apps.googleusercontent.com
+                  remote_jwks:
+                    http_uri:
+                      uri: https://www.googleapis.com/oauth2/v3/certs
+                      cluster: jwt.www.googleapis.com|443
+                  from_headers:
+                  - name: Authorization
+                    value_prefix: "Bearer "
+              rules:           
+              - match:
+                  prefix: "/todos"
+                requires:
+                  provider_name: "google-jwt"
+          - name: envoy.router
+            config: {}
+  clusters:
+  - name: service_local
+    connect_timeout: 2s
+    type: LOGICAL_DNS
+    dns_lookup_family: V4_ONLY
+    lb_policy: ROUND_ROBIN
+    hosts:
+    - socket_address:
+        address: localhost
+        port_value: 50051
+
+  - name: jwt.www.googleapis.com|443
+    type: LOGICAL_DNS
+    dns_lookup_family: V4_ONLY
+    connect_timeout: 2s
+    lb_policy: ROUND_ROBIN
+    hosts:
+    - socket_address:
+        address: www.googleapis.com
+        port_value: 443
+    tls_context: { sni: www.google.com }
