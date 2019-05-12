@@ -4,11 +4,9 @@ admin:
     socket_address:
       address: 127.0.0.1
       port_value: 9000
-
 node:
   cluster: service_greeter
   id: test-id
-
 static_resources:
   listeners:
   - name: listener_0
@@ -26,16 +24,18 @@ static_resources:
             - name: local_service
               domains: ["*"]
               routes:
-              - match: { prefix: "/todos" }
-                route: { cluster: service_local }
+              - match:
+                  prefix: "/"
+                direct_response:
+                  status: 200
           http_filters:
           - name: envoy.filters.http.jwt_authn
             config:
               providers:
                 google-jwt:
-                  issuer: accounts.google.com
+                  issuer: https://accounts.google.com
                   audiences:
-                  - 764086051850-6qr4p6gpi6hn506pt8ejuq83di341hur.apps.googleusercontent.com
+                  - 32555940559.apps.googleusercontent.com
                   remote_jwks:
                     http_uri:
                       uri: https://www.googleapis.com/oauth2/v3/certs
@@ -43,24 +43,14 @@ static_resources:
                   from_headers:
                   - name: Authorization
                     value_prefix: "Bearer "
-              rules:           
+              rules:
               - match:
-                  prefix: "/todos"
+                  prefix: "/"
                 requires:
                   provider_name: "google-jwt"
           - name: envoy.router
             config: {}
   clusters:
-  - name: service_local
-    connect_timeout: 2s
-    type: LOGICAL_DNS
-    dns_lookup_family: V4_ONLY
-    lb_policy: ROUND_ROBIN
-    hosts:
-    - socket_address:
-        address: localhost
-        port_value: 50051
-
   - name: jwt.www.googleapis.com|443
     type: LOGICAL_DNS
     dns_lookup_family: V4_ONLY

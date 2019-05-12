@@ -19,7 +19,7 @@ That is
 The JWT header sent by IAP is re validated for you by envoy
 
 
-## Configure IAP 
+## Configure IAP
 
 This technique mostly applies to an application running in Google Kubernetes Engine or Compute Engine where you are free to run a docker container or envoy stand-alone.
 
@@ -102,7 +102,7 @@ FROM envoyproxy/envoy:latest
 COPY envoy_iap.yaml /etc/envoy/envoy.yaml
 ```
 
-then if your upstreamservice is local, you need to point 
+then if your upstreamservice is local, you need to point
 
 ```
 docker build -t envoy:v1 .
@@ -147,3 +147,9 @@ For more information, see
 As an extra, this repo also contains a sample for validating a ```google_id_token``` as issued by gcloud cli.
 This is really just a test but if you want to try it out, run envoy with ```envoy_google.yaml``` and then note the sections
 commented out in ```http_client.py```.
+
+```
+export ID_TOKEN=$(gcloud config config-helper --format 'value(credential.id_token)')
+
+curl -H "Authorization: Bearer $ID_TOKEN" http://localhost:10000/```
+```
