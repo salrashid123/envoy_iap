@@ -41,6 +41,8 @@ static_resources:
                     http_uri:
                       uri: https://www.gstatic.com/iap/verify/public_key-jwk
                       cluster: jwt.www.googleapis.com|443
+                       timeout:
+                        seconds: 5                     
                   from_headers:
                   - name: X-Goog-Iap-Jwt-Assertion
               rules:

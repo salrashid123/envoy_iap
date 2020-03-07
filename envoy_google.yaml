@@ -40,6 +40,8 @@ static_resources:
                     http_uri:
                       uri: https://www.googleapis.com/oauth2/v3/certs
                       cluster: jwt.www.googleapis.com|443
+                      timeout:
+                        seconds: 5                      
                   from_headers:
                   - name: Authorization
                     value_prefix: "Bearer "
