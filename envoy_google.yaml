@@ -15,7 +15,8 @@ static_resources:
     filter_chains:
     - filters:
       - name: envoy.http_connection_manager
-        config:
+        typed_config:  
+          "@type": type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager          
           stat_prefix: ingress_http
           codec_type: AUTO
           route_config:
@@ -30,8 +31,9 @@ static_resources:
                   status: 200
           http_filters:
           - name: envoy.filters.http.jwt_authn
-            config:
-              providers:
+            typed_config:
+              "@type": type.googleapis.com/envoy.config.filter.http.jwt_authn.v2alpha.JwtAuthentication
+              providers:          
                 google-jwt:
                   issuer: https://accounts.google.com
                   audiences:
@@ -50,8 +52,7 @@ static_resources:
                   prefix: "/"
                 requires:
                   provider_name: "google-jwt"
-          - name: envoy.router
-            config: {}
+          - name: envoy.filters.http.router
   clusters:
   - name: jwt.www.googleapis.com|443
     type: LOGICAL_DNS

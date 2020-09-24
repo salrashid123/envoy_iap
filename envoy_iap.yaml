@@ -17,7 +17,8 @@ static_resources:
     filter_chains:
     - filters:
       - name: envoy.http_connection_manager
-        config:
+        typed_config:  
+          "@type": type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager              
           stat_prefix: ingress_http
           codec_type: AUTO
           route_config:
@@ -30,7 +31,8 @@ static_resources:
                 route: { cluster: service_local }          
           http_filters:
           - name: envoy.filters.http.jwt_authn
-            config:
+            typed_config:
+              "@type": type.googleapis.com/envoy.config.filter.http.jwt_authn.v2alpha.JwtAuthentication              
               providers:
                 google-jwt:
                   issuer: https://cloud.google.com/iap
@@ -41,7 +43,7 @@ static_resources:
                     http_uri:
                       uri: https://www.gstatic.com/iap/verify/public_key-jwk
                       cluster: jwt.www.googleapis.com|443
-                       timeout:
+                      timeout:
                         seconds: 5                     
                   from_headers:
                   - name: X-Goog-Iap-Jwt-Assertion
@@ -50,9 +52,7 @@ static_resources:
                   prefix: "/todos"
                 requires:
                   provider_name: "google-jwt"
-          - name: envoy.router
-            config: {}
-
+          - name: envoy.filters.http.router
   clusters:
   - name: service_local
     connect_timeout: 2s
