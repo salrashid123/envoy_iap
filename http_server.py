@@ -1,3 +1,7 @@
+import werkzeug
+werkzeug.cached_property = werkzeug.utils.cached_property
+# https://github.com/jarus/flask-testing/issues/143#issuecomment-602715871
+
 from flask import Flask, request, abort
 from flask_restplus import Api, Resource, fields
 from functools import wraps

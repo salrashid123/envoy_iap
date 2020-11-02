@@ -119,7 +119,7 @@ In this repo, you'll also find a smaple client/server app in python.
 to use, first
 
 ```
-virtualenv env
+virtualenv env --python=/usr/bin/python3.7
 source env/bin/activate
 pip install -r requirements.txt
 ```
