@@ -19,6 +19,14 @@ That is
 The JWT header sent by IAP is re validated for you by envoy
 
 
+>>> NOTE: this repo uses `envoy 1.17`
+
+you can get the the -dev channel as of 12/24/20:
+
+```
+docker cp `docker create envoyproxy/envoy-dev:latest`:/usr/local/bin/envoy .
+```
+
 ## Configure IAP
 
 This technique mostly applies to an application running in Google Kubernetes Engine or Compute Engine where you are free to run a docker container or envoy stand-alone.
@@ -42,7 +50,8 @@ Which in the envoy config format, looks like:
 ```yaml
           http_filters:
           - name: envoy.filters.http.jwt_authn
-            config:
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtAuthentication            
               providers:
                 google-jwt:
                   issuer: https://cloud.google.com/iap
@@ -53,15 +62,10 @@ Which in the envoy config format, looks like:
                     http_uri:
                       uri: https://www.gstatic.com/iap/verify/public_key-jwk
                       cluster: jwt.www.googleapis.com|443
+                      timeout:
+                        seconds: 5                     
                   from_headers:
                   - name: X-Goog-Iap-Jwt-Assertion
-              rules:
-              - match:
-                  prefix: "/todos"
-                requires:
-                  provider_name: "google-jwt"
-          - name: envoy.router
-            config: {}
 ```
 
 Envoy will process a JWT in the format below and look for it in the ```X-Goog-Iap-Jwt-Assertion``` header
@@ -98,7 +102,7 @@ envoy -c envoy_iap.yaml -l debug
 If you would rather run this in a docker container (recommended), generate the image in anyway you'd like using envoy's dockerhub:
 
 ```dockerfile
-FROM envoyproxy/envoy:latest
+FROM envoyproxy/envoy-dev:latest
 COPY envoy_iap.yaml /etc/envoy/envoy.yaml
 ```
 
@@ -135,7 +139,7 @@ Then start envoy and the backend ```http_server.py```.  Copy the JWT into the co
 
 ### Envoy Control and Dataplane helloworld
 
-You dont' have to staticlly cofigure envoy proxy.  One of its many capabilities is to allow remote config.  
+You dont' have to statically configure envoy proxy.  One of its many capabilities is to allow remote config.  
 For more information, see
 
 - [https://github.com/salrashid123/envoy_control](https://github.com/salrashid123/envoy_control)
