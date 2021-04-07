@@ -42,7 +42,7 @@ static_resources:
                   remote_jwks:
                     http_uri:
                       uri: https://www.gstatic.com/iap/verify/public_key-jwk
-                      cluster: jwt.www.googleapis.com|443
+                      cluster: jwt.www.gstatic.com|443
                       timeout:
                         seconds: 5                     
                   from_headers:
@@ -69,19 +69,19 @@ static_resources:
               socket_address:
                 address: localhost
                 port_value: 50051
-  - name: jwt.www.googleapis.com|443
+  - name: jwt.www.gstatic.com|443
     type: LOGICAL_DNS
     dns_lookup_family: V4_ONLY
     connect_timeout: 2s
     lb_policy: ROUND_ROBIN
     load_assignment:
-      cluster_name: jwt.www.googleapis.com|443
+      cluster_name: jwt.www.gstatic.com|443
       endpoints:
       - lb_endpoints:
         - endpoint:
             address:
               socket_address:
-                address: www.googleapis.com
+                address: www.gstatic.com
                 port_value: 443
     transport_socket:
       name: envoy.transport_sockets.tls
