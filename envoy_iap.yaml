@@ -81,7 +81,7 @@ static_resources:
         - endpoint:
             address:
               socket_address:
-                address: www.googleapis.com
+                address: www.gstatic.com
                 port_value: 443
     transport_socket:
       name: envoy.transport_sockets.tls
