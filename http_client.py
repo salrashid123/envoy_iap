@@ -26,4 +26,4 @@ idt = "YOUR_TEST_IAP_TOKEN_HERE"
 headers = {'X-Goog-Iap-Jwt-Assertion': idt }
 
 r = requests.get('http://localhost:10000/todos', headers=headers)
-print r.text
+print(r.text)

@@ -1,4 +1,4 @@
 google-auth
 google-auth-httplib2
 requests
-flask-restplus
+flask-restx

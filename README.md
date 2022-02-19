@@ -118,7 +118,7 @@ docker run -p 10000:10000 --net host -t envoy:v1
 
 ### Sample Client/Server
 
-In this repo, you'll also find a smaple client/server app in python.
+In this repo, you'll also find a sample client/server app in python.
 
 to use, first
 
