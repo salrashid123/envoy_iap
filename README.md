@@ -153,7 +153,7 @@ This is really just a test but if you want to try it out, run envoy with ```envo
 commented out in ```http_client.py```.
 
 ```
-export ID_TOKEN=$(gcloud config config-helper --format 'value(credential.id_token)')
+export ID_TOKEN=`gcloud auth print-identity-token`
 
 curl -H "Authorization: Bearer $ID_TOKEN" http://localhost:10000/```
 ```
